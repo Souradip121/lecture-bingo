@@ -426,7 +426,7 @@ function paintLive() {
   if (dot) dot.classList.toggle('off', !S.live?.live);
 }
 
-// The card fills the screen height (tiles between 0.75 and 0.66 wide-to-tall),
+// The card fills the screen height (tiles between 0.75 and 0.6 wide-to-tall),
 // and every label uses one size, like a printed sheet: the largest size (not
 // below 12px) at which all 24 fit with sticker room reserved. Words of ten or
 // more letters may break at a syllable so one long word can't shrink the card.
@@ -441,11 +441,11 @@ function fitCells() {
     const foot = $app.querySelector('.card-foot');
     const below = (strip ? strip.offsetHeight + 14 : 0) + (foot?.textContent ? foot.offsetHeight : 0) + 26;
     const avail = window.innerHeight - grid.getBoundingClientRect().top - below;
-    const h = Math.max(w / 0.75, Math.min(w / 0.66, (avail - gap * 4) / 5));
+    const h = Math.max(w / 0.75, Math.min(w / 0.6, (avail - gap * 4) / 5));
     grid.style.setProperty('--cell-h', `${h.toFixed(1)}px`);
     grid.classList.add('sized');
 
-    const MIN = 12;
+    const MIN = 11.5;
     const base = Math.max(MIN, Math.min(16, w * 0.19));
     const overflows = (cell, t) => t.scrollWidth > t.clientWidth + 0.5 || cell.scrollHeight > cell.clientHeight + 0.5;
     for (const cell of cells) {
@@ -508,7 +508,7 @@ window.addEventListener('resize', () => {
   fitTimer = setTimeout(() => S.view === 'card' && fitCells(), 120);
 });
 
-// Dashed ring on any square that would finish a line for you.
+// A dashed border on any square that would finish a line for you.
 function paintHints() {
   const d = S.data;
   if (!d || S.view !== 'card') return;
@@ -557,7 +557,7 @@ function stripContent() {
     return {
       text: `${w.nick} got BINGO!`,
       sub: fresh
-        ? `${ordinal(w.place)} in ${minsShort(w.secs ?? 0)}. You need ${me.need} more for ${next}`
+        ? `${ordinal(w.place)} in ${minsShort(w.secs ?? 0)} · ${me.need} more for ${next}`
         : `You need ${me.need} more for ${next}`,
       cls: fresh ? 'news' : me.need === 1 ? 'hot' : '',
     };

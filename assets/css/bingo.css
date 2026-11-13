@@ -448,7 +448,7 @@ button {
   align-items: center;
   justify-content: center;
   gap: 0;
-  padding: 6px 2px;
+  padding: 6px 4px;
   border: var(--line) solid var(--ink);
   border-radius: var(--r-cell);
   background: var(--bg);
@@ -596,13 +596,8 @@ button {
     box-shadow: 0 0 0 3px var(--ink);
   }
 }
-.cell.one-away::after {
-  content: '';
-  position: absolute;
-  inset: 4px;
-  border: 2.5px dashed rgba(22, 22, 22, 0.6);
-  border-radius: 7px;
-  pointer-events: none;
+.cell.one-away {
+  border-style: dashed;
 }
 .cell.won-line {
   box-shadow: 0 0 0 3px var(--ink);
@@ -642,6 +637,7 @@ button {
 }
 .strip small {
   display: block;
+  text-wrap: balance;
   font-size: 13.5px;
   font-weight: 800;
   color: #2b5a41;
