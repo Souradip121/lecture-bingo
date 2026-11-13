@@ -785,10 +785,10 @@ function renderWin() {
       <button class="btn red" type="button" data-act="next">Next lecture</button>
       <button class="btn ghost" type="button" data-act="share">${icons.share()}Share</button>
     </div>
-    ${deco('', 'left:12px;bottom:18px;width:50px;transform:rotate(-12deg)', star(COLORS.sun))}
+    ${deco('', 'left:8px;bottom:16px;width:44px;transform:rotate(-12deg)', star(COLORS.sun))}
     ${deco('', 'left:30px;bottom:76px;width:22px;height:22px', dashSvg(dash(COLORS.green, 4, 18, 18, 6, 4.5), '0 0 22 22'))}
     ${deco('', 'left:62px;bottom:16px;width:22px;height:22px', dashSvg(dash(COLORS.cobalt, 4, 18, 16, 6, 4.5), '0 0 22 22'))}
-    ${deco('', 'right:12px;bottom:16px;width:56px', smiley(COLORS.green))}
+    ${deco('', 'right:8px;bottom:14px;width:48px', smiley(COLORS.green))}
     ${deco('', 'right:30px;bottom:80px;width:22px;height:22px', dashSvg(dash(COLORS.cobalt, 8, 2, 14, 20, 4.5), '0 0 22 22'))}
   </section>`;
   $app.querySelector('.screen').addEventListener('click', onAction);
