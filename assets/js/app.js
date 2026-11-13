@@ -468,15 +468,37 @@ function fitCells() {
     for (const f of fitted) {
       f.cell.style.setProperty('--fs', `${Math.min(card, f.fs)}px`);
       if (f.stuck) {
-        // Even the smallest size can't fit a long word: hyphenate it.
-        f.t.style.hyphens = 'auto';
-        f.t.style.overflowWrap = 'anywhere';
+        // Even the smallest size can't fit a long word: offer a syllable break
+        // (browsers won't auto-hyphenate capitalised words), then any break.
+        f.t.textContent = softHyphens(f.t.textContent);
+        const had = f.cell.classList.contains('hit');
+        f.cell.classList.add('hit');
+        if (overflows(f.cell, f.t)) f.t.style.overflowWrap = 'anywhere';
+        if (!had) f.cell.classList.remove('hit');
       }
     }
   };
   if (document.fonts?.status !== 'loaded') document.fonts.ready.then(run);
   run();
 }
+// "Attendance" -> "Atten­dance": a soft hyphen at the consonant pair nearest
+// the middle of each long word (VC|CV), else before a consonant-vowel pair.
+function softHyphens(text) {
+  const V = /[aeiouy]/i;
+  return text.replace(/[A-Za-z]{8,}/g, (w) => {
+    if (w.includes('­')) return w;
+    const mid = w.length / 2;
+    let best = -1;
+    for (let i = 3; i <= w.length - 3; i += 1) {
+      const a = w[i - 1];
+      const b = w[i];
+      const ok = (!V.test(a) && !V.test(b) && V.test(w[i - 2]) && V.test(w[i + 1])) || (V.test(a) && !V.test(b) && V.test(w[i + 1]));
+      if (ok && (best < 0 || Math.abs(i - mid) < Math.abs(best - mid))) best = i;
+    }
+    return best > 0 ? `${w.slice(0, best)}­${w.slice(best)}` : w;
+  });
+}
+
 let fitTimer;
 window.addEventListener('resize', () => {
   clearTimeout(fitTimer);
@@ -838,7 +860,9 @@ function menuSheet() {
   const closes = new Date(d.room.expires_at).toLocaleString('en-IN', { weekday: 'short', hour: 'numeric', minute: '2-digit' });
   openSheet(
     `<div class="sheet-head"><div><h2>Room</h2><p class="sub">Lecture ${d.round.n} · closes ${esc(closes)}</p></div>${closeBtn}</div>
-     <div class="bigcode"><b>${esc(d.room.code)}</b><button class="btn" type="button" data-m="copy">${icons.copy()}Copy link</button></div>
+     <div class="bigcode"><b>${esc(d.room.code)}</b><span class="bc-btns"><button class="btn" type="button" data-m="copy">${icons.copy()}Copy link</button>${
+       navigator.share ? `<button class="btn" type="button" data-m="invite">${icons.share()}Invite</button>` : ''
+     }</span></div>
      ${playersList()}
      <div class="menu">
        ${d.room.is_creator ? `<button type="button" data-m="edit">${icons.pencil()}<span>Edit the phrases<small>Saving deals everyone a new card</small></span></button>` : ''}
@@ -892,6 +916,7 @@ function menuSheet() {
           toast(`You left ${d.room.code}.`);
         }
       });
+      root.querySelector('[data-m="invite"]')?.addEventListener('click', () => invite());
       root.querySelector('[data-m="copy"]').addEventListener('click', async () => {
         try {
           await navigator.clipboard.writeText(roomUrl(d.room.code));

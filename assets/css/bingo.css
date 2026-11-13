@@ -38,6 +38,7 @@
   --font: 'Nunito', ui-rounded, 'Segoe UI', system-ui, sans-serif;
   --display: 'Lilita One', 'Nunito', system-ui, sans-serif;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  /* Overshoot is kept for the two sticker moments only: the slap on a square and the BINGO! burst. */
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --pad: clamp(16px, 5vw, 24px);
   color-scheme: light;
@@ -440,13 +441,13 @@ button {
 .cell {
   --bg: var(--paper);
   position: relative;
-  aspect-ratio: 0.78;
+  aspect-ratio: 0.75;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  padding: 4px 2px;
+  gap: 0;
+  padding: 3px 2px;
   border: var(--line) solid var(--ink);
   border-radius: var(--r-cell);
   background: var(--bg);
@@ -487,9 +488,9 @@ button {
 }
 .cell .sticker {
   display: none;
-  width: clamp(24px, 8.4vw, 33px);
+  width: clamp(22px, 7.4vw, 30px);
   flex: none;
-  margin-bottom: 1px;
+  margin-bottom: 2px;
   filter: drop-shadow(0 1.5px 0 rgba(22, 22, 22, 0.18));
 }
 .cell.hit .sticker {
@@ -803,7 +804,7 @@ button {
   font-size: 17px;
 }
 .board li.arrive {
-  animation: arrive 0.6s var(--ease-spring) both;
+  animation: arrive 0.6s var(--ease-out) both;
 }
 @keyframes arrive {
   from {
@@ -987,7 +988,7 @@ button {
   height: 18px;
 }
 .chip.new {
-  animation: arrive 0.45s var(--ease-spring) both;
+  animation: arrive 0.45s var(--ease-out) both;
 }
 .ed-bar {
   position: sticky;
@@ -1069,21 +1070,24 @@ button {
   margin-top: 14px;
 }
 .bigcode {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: grid;
   gap: 10px;
   margin-top: 16px;
-  padding: 10px 10px 10px 18px;
+  padding: 12px 14px 14px 18px;
   border: var(--line) solid var(--ink);
   border-radius: var(--r-ctl);
   background: var(--sun);
 }
 .bigcode b {
   font-weight: 1000;
-  font-size: 30px;
+  font-size: clamp(24px, 7.4vw, 30px);
   letter-spacing: 0.01em;
-  overflow-wrap: anywhere;
+  white-space: nowrap;
+}
+.bc-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 .bigcode .btn {
   width: auto;
@@ -1187,13 +1191,13 @@ button {
   text-align: left;
   visibility: hidden;
   transform: translate(-50%, calc(-100% - 40px));
-  transition: transform 0.45s var(--ease-spring), visibility 0s linear 0.45s;
+  transition: transform 0.45s var(--ease-out), visibility 0s linear 0.45s;
   cursor: pointer;
 }
 .banner.show {
   visibility: visible;
   transform: translate(-50%, 0);
-  transition: transform 0.45s var(--ease-spring), visibility 0s;
+  transition: transform 0.45s var(--ease-out), visibility 0s;
 }
 .banner svg {
   width: 44px;
