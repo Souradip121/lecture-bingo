@@ -9,7 +9,6 @@ import { shareResult } from './share.js';
 const $app = document.getElementById('app');
 const $sheet = document.getElementById('sheet');
 const $toast = document.getElementById('toast');
-const $banner = document.getElementById('banner');
 
 // ---------------------------------------------------------------------------
 // Small helpers
@@ -428,7 +427,7 @@ function paintLive() {
 
 // The card fills the screen height (tiles between 0.75 and 0.6 wide-to-tall),
 // and every label uses one size, like a printed sheet: the largest size (not
-// below 12px) at which all 24 fit with sticker room reserved. Words of ten or
+// below 11.5px) at which all 24 fit with sticker room reserved. Words of ten or
 // more letters may break at a syllable so one long word can't shrink the card.
 function fitCells() {
   const run = () => {
@@ -761,7 +760,6 @@ function boardHtml(fresh = new Set()) {
 
 function renderWin() {
   S.view = 'win';
-  $banner.classList.remove('show');
   const d = S.data;
   document.title = `BINGO! · ${d.room.code} · Lecture Bingo`;
   const headline = d.me.place === 1 ? 'You won in' : `${ordinal(d.me.place)} place in`;

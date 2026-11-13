@@ -653,7 +653,7 @@ button {
   background: var(--sun);
   border-color: var(--ink);
   border-width: var(--line);
-  animation: news-pop 0.5s var(--ease-spring) both;
+  animation: news-pop 0.45s var(--ease-out) both;
 }
 .strip.news > svg:not(.dz) {
   animation: wiggle 1.2s ease-in-out 3;
@@ -1210,48 +1210,6 @@ button {
   margin-top: 14px;
   border: var(--line) solid var(--ink);
   border-radius: 16px;
-}
-
-.banner {
-  position: fixed;
-  left: 50%;
-  top: max(12px, env(safe-area-inset-top));
-  z-index: 40;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: min(calc(100vw - 24px), 410px);
-  padding: 10px 16px 10px 10px;
-  border: var(--line) solid var(--ink);
-  border-radius: 20px;
-  background: var(--sun);
-  box-shadow: 0 10px 24px -10px rgba(22, 22, 22, 0.45);
-  text-align: left;
-  visibility: hidden;
-  transform: translate(-50%, calc(-100% - 40px));
-  transition: transform 0.45s var(--ease-out), visibility 0s linear 0.45s;
-  cursor: pointer;
-}
-.banner.show {
-  visibility: visible;
-  transform: translate(-50%, 0);
-  transition: transform 0.45s var(--ease-out), visibility 0s;
-}
-.banner svg {
-  width: 44px;
-  flex: none;
-}
-.banner b {
-  display: block;
-  font-weight: 1000;
-  font-size: 19px;
-  line-height: 1.15;
-}
-.banner span {
-  display: block;
-  font-weight: 800;
-  font-size: 14.5px;
-  color: #4a3a00;
 }
 
 .toast {
