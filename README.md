@@ -6,7 +6,7 @@
 **Or host your own copy for free** in four steps (below). No build step, no server, no paid plan, no sign-up for players.
 
 <p>
-  <img src="screenshots/join.png" alt="Join screen: Lecture Bingo logo, a smiling stack of books, room code DBMS-8AM, red Join button, Make a card for your prof, 7 classmates playing" width="250">
+  <img src="screenshots/join.png" alt="Join screen: Lecture Bingo logo, a smiling stack of books, room code OS-10AM, red Join button, Make a card for your prof, 7 classmates playing" width="250">
   <img src="screenshots/card.png" alt="A 5x5 card of professor phrases in red, yellow, blue, mint and white squares, star stickers on the ones already said, and a strip saying Riya needs 1 more" width="250">
   <img src="screenshots/win.png" alt="Win screen: BINGO! on a yellow starburst, You won in 31 minutes, a leaderboard and Next lecture and Share buttons" width="250">
 </p>
