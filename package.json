@@ -1,0 +1,16 @@
+{
+  "name": "lecture-bingo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Bingo cards of things professors say. Make a room, play with your class, the server checks every BINGO. Static site + Supabase.",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test",
+    "check:live": "node scripts/live-check.mjs",
+    "serve": "python -m http.server 8801"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

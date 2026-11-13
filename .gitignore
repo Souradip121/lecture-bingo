@@ -1,0 +1,17 @@
+node_modules/
+.DS_Store
+Thumbs.db
+.env
+.env.*
+# local tooling and design-process scratch
+.claude/
+supabase/
+.impeccable/
+PRODUCT.md
+DESIGN.md
+DESIGN.json
+# reel stills live next to the code but are not part of the site
+screenshots/*.png
+!screenshots/join.png
+!screenshots/card.png
+!screenshots/win.png

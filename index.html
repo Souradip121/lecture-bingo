@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Lecture Bingo · play the 8 AM lecture</title>
+  <meta name="description" content="Bingo cards of things professors say. Make a room, share the code with your class, tap a square when your prof says it. First full line wins. No sign-up, open source.">
+  <meta name="theme-color" content="#f9f4e7">
+  <meta name="color-scheme" content="light">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Lecture Bingo">
+  <meta property="og:description" content="Don't sleep through the 8 AM lecture. Play it. Bingo cards of things profs say, live with your class.">
+  <meta property="og:image" content="https://souradip121.github.io/lecture-bingo/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/icon-180.png">
+  <link rel="preload" href="assets/fonts/nunito-var.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/lilita-one.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="modulepreload" href="assets/js/app.js">
+  <link rel="stylesheet" href="assets/css/bingo.css">
+</head>
+<body>
+<!--
+  THESIS: A lecture as a sticker book: you slap a sticker on every line your prof says, and the room races you to a full line. Refuses the quiz-app look (dark gradients, timers, avatars, score cards).
+  OWN-WORLD: Cream paper (#f9f4e7) on sunflower; chunky 3px-ink rounded squares in tomato / sunflower / cobalt / mint / paper; yellow stars and smiley stickers with black outlines; confetti dashes; Nunito black for everything, Lilita One only for BINGO!.
+  STORY: Type the class code and a nickname, tap squares as the prof talks, see who is one away, win (or get told who did), share the result card, deal the next lecture.
+  FIRST VIEWPORT: Join: smiley + "Lecture Bingo" 60px two lines + star, smiling book stack, "Join a room", code field, full-width red Join, blue "Make a card for your prof" link, "N classmates playing". Card: back / title / gear, 5x5 squares filling the width, mint "Riya needs 1 more" strip below.
+  FORM: User-pinned direction "E · stickers" from builds/ui-concepts/bingo (approved comp bingo_e_stickers.png). No concept roll: the user picked it.
+  FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
+-->
+  <div class="desk">
+    <main class="app" id="app" aria-live="off">
+      <noscript><section class="screen"><p class="loading">Lecture Bingo needs JavaScript to deal your card.</p></section></noscript>
+    </main>
+  </div>
+  <div class="banner" id="banner" role="status" aria-live="polite"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <dialog class="sheet" id="sheet" aria-label="Lecture Bingo"></dialog>
+  <script type="module" src="assets/js/app.js"></script>
+</body>
+</html>
