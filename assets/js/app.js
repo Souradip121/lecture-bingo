@@ -3,7 +3,7 @@ import { api, messageFor } from './api.js';
 import { watchRoom } from './live.js';
 import { need as needOf, toggle, isMarked, LINES, FREE } from './lines.js';
 import { DEFAULT_PHRASES } from './phrases.js';
-import { smiley, star, beam, books, dash, people, burst, icons, COLORS } from './art.js';
+import { smiley, star, sticker, beam, books, dash, people, burst, icons, COLORS } from './art.js';
 import { shareResult } from './share.js';
 
 const $app = document.getElementById('app');
@@ -88,18 +88,6 @@ function toast(msg, ms = 2600) {
   toastTimer = setTimeout(() => $toast.classList.remove('show'), ms);
 }
 
-let bannerTimer;
-function banner(title, sub, onTap) {
-  $banner.innerHTML = `${smiley()}<div><b>${esc(title)}</b><span>${esc(sub)}</span></div>`;
-  $banner.onclick = () => {
-    $banner.classList.remove('show');
-    onTap?.();
-  };
-  requestAnimationFrame(() => $banner.classList.add('show'));
-  clearTimeout(bannerTimer);
-  bannerTimer = setTimeout(() => $banner.classList.remove('show'), 6000);
-}
-
 function openSheet(html, bind) {
   $sheet.innerHTML = `<div class="sheet-in">${html}</div>`;
   $sheet.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', () => $sheet.close()));
@@ -130,6 +118,7 @@ const S = {
   queue: Promise.resolve(),
   peekTimer: null,
   dealtByMe: false,
+  news: null,
 };
 
 function stopLive() {
@@ -340,9 +329,9 @@ const TILTS = [-9, 7, -5, 10, -12, 6, -8, 4, -6, 9, 11, -7, 0, 5, -10, -4, 8, -1
 
 function stickerFor(pos) {
   const c = COLOR_GRID[pos];
-  if (c === 'y') return star(COLORS.tomato);
-  if (c === 'w' || pos % 7 === 3) return smiley(c === 'w' ? COLORS.sun : COLORS.sun);
-  return star(COLORS.sun);
+  if (c === 'y') return sticker('star', COLORS.tomato);
+  if (c === 'w' || pos % 7 === 3) return sticker('smiley');
+  return sticker('star');
 }
 
 async function roomScreen(code) {
@@ -428,6 +417,7 @@ function renderCard() {
   $app.querySelector('.screen').addEventListener('click', onAction);
   updateRoomBits();
   paintLive();
+  paintHints();
   fitCells();
 }
 
@@ -436,56 +426,69 @@ function paintLive() {
   if (dot) dot.classList.toggle('off', !S.live?.live);
 }
 
-// One text size for the whole card (like the printed sheet), shrunk only for
-// the squares that need it. Sticker space is reserved so taps never reflow.
+// The card fills the screen height (tiles between 0.75 and 0.66 wide-to-tall),
+// and every label uses one size, like a printed sheet: the largest size (not
+// below 12px) at which all 24 fit with sticker room reserved. Words of ten or
+// more letters may break at a syllable so one long word can't shrink the card.
 function fitCells() {
   const run = () => {
+    const grid = $app.querySelector('.grid');
     const cells = [...$app.querySelectorAll('.cell[data-pos]')];
-    if (!cells.length) return;
+    if (!grid || !cells.length) return;
     const w = cells[0].clientWidth;
-    const base = Math.max(12, Math.min(16, w * 0.2));
-    const MIN = 11;
+    const gap = parseFloat(getComputedStyle(grid).rowGap) || 6;
+    const strip = $app.querySelector('.strip');
+    const foot = $app.querySelector('.card-foot');
+    const below = (strip ? strip.offsetHeight + 14 : 0) + (foot?.textContent ? foot.offsetHeight : 0) + 26;
+    const avail = window.innerHeight - grid.getBoundingClientRect().top - below;
+    const h = Math.max(w / 0.75, Math.min(w / 0.66, (avail - gap * 4) / 5));
+    grid.style.setProperty('--cell-h', `${h.toFixed(1)}px`);
+    grid.classList.add('sized');
+
+    const MIN = 12;
+    const base = Math.max(MIN, Math.min(16, w * 0.19));
     const overflows = (cell, t) => t.scrollWidth > t.clientWidth + 0.5 || cell.scrollHeight > cell.clientHeight + 0.5;
-    const fitted = cells.map((cell) => {
+    for (const cell of cells) {
       const t = cell.querySelector('.t');
+      t.textContent = softHyphens(t.textContent.replace(/\u00AD/g, ''), 10);
+      t.style.overflowWrap = '';
+    }
+    const measure = (fs) => {
+      const stuck = [];
+      for (const cell of cells) {
+        const t = cell.querySelector('.t');
+        const had = cell.classList.contains('hit');
+        cell.classList.add('hit');
+        cell.style.setProperty('--fs', `${fs}px`);
+        if (overflows(cell, t)) stuck.push(cell);
+        if (!had) cell.classList.remove('hit');
+      }
+      return stuck;
+    };
+    let fs = base;
+    let stuck = measure(fs);
+    while (stuck.length && fs > MIN) {
+      fs -= 0.5;
+      stuck = measure(fs);
+    }
+    for (const cell of stuck) {
+      const t = cell.querySelector('.t');
+      t.textContent = softHyphens(t.textContent.replace(/\u00AD/g, ''), 8);
       const had = cell.classList.contains('hit');
       cell.classList.add('hit');
-      t.style.hyphens = 'manual';
-      t.style.overflowWrap = 'normal';
-      let fs = base;
-      cell.style.setProperty('--fs', `${fs}px`);
-      while (fs > MIN && overflows(cell, t)) {
-        fs -= 0.5;
-        cell.style.setProperty('--fs', `${fs}px`);
-      }
-      const stuck = overflows(cell, t);
+      if (overflows(cell, t)) t.style.overflowWrap = 'anywhere';
       if (!had) cell.classList.remove('hit');
-      return { cell, t, fs, stuck };
-    });
-    // The card's size: what most squares can take (30th percentile of fits).
-    const sorted = fitted.map((f) => f.fs).sort((a, b) => a - b);
-    const card = sorted[Math.floor(sorted.length * 0.3)];
-    for (const f of fitted) {
-      f.cell.style.setProperty('--fs', `${Math.min(card, f.fs)}px`);
-      if (f.stuck) {
-        // Even the smallest size can't fit a long word: offer a syllable break
-        // (browsers won't auto-hyphenate capitalised words), then any break.
-        f.t.textContent = softHyphens(f.t.textContent);
-        const had = f.cell.classList.contains('hit');
-        f.cell.classList.add('hit');
-        if (overflows(f.cell, f.t)) f.t.style.overflowWrap = 'anywhere';
-        if (!had) f.cell.classList.remove('hit');
-      }
     }
   };
   if (document.fonts?.status !== 'loaded') document.fonts.ready.then(run);
   run();
 }
+
 // "Attendance" -> "Atten­dance": a soft hyphen at the consonant pair nearest
 // the middle of each long word (VC|CV), else before a consonant-vowel pair.
-function softHyphens(text) {
+function softHyphens(text, minLen = 8) {
   const V = /[aeiouy]/i;
-  return text.replace(/[A-Za-z]{8,}/g, (w) => {
+  return text.replace(new RegExp(`[A-Za-z]{${minLen},}`, 'g'), (w) => {
     if (w.includes('­')) return w;
     const mid = w.length / 2;
     let best = -1;
@@ -504,6 +507,20 @@ window.addEventListener('resize', () => {
   clearTimeout(fitTimer);
   fitTimer = setTimeout(() => S.view === 'card' && fitCells(), 120);
 });
+
+// Dashed ring on any square that would finish a line for you.
+function paintHints() {
+  const d = S.data;
+  if (!d || S.view !== 'card') return;
+  const want = new Set();
+  if (!d.me.place) {
+    for (const line of LINES) {
+      const open = line.filter((p) => !isMarked(d.me.mask, p));
+      if (open.length === 1) want.add(open[0]);
+    }
+  }
+  $app.querySelectorAll('.cell[data-pos]').forEach((c) => c.classList.toggle('one-away', want.has(Number(c.dataset.pos))));
+}
 
 function paintCell(pos, on, animate) {
   const b = $app.querySelector(`.cell[data-pos="${pos}"]`);
@@ -535,10 +552,14 @@ function stripContent() {
   if (!others.length) return { text: `Send ${d.room.code} to your class`, sub: "You're the only one here so far" };
   if (winners.length) {
     const next = ordinal(winners.length + 1);
+    const fresh = S.news && S.news.until > Date.now() ? winners.find((w) => w.nick === S.news.who) : null;
+    const w = fresh || winners[0];
     return {
-      text: `${winners[0].nick} got BINGO!`,
-      sub: `You need ${me.need} more for ${next}`,
-      cls: me.need === 1 ? 'hot' : '',
+      text: `${w.nick} got BINGO!`,
+      sub: fresh
+        ? `${ordinal(w.place)} in ${minsShort(w.secs ?? 0)}. You need ${me.need} more for ${next}`
+        : `You need ${me.need} more for ${next}`,
+      cls: fresh ? 'news' : me.need === 1 ? 'hot' : '',
     };
   }
   const best = Math.min(...others.map((p) => p.need));
@@ -560,7 +581,8 @@ function updateRoomBits() {
   const strip = $app.querySelector('.strip');
   if (strip) {
     const s = stripContent();
-    strip.className = `strip ${s.cls || ''}`;
+    const cls = `strip ${s.cls || ''}`.trim();
+    if (strip.className !== cls) strip.className = cls;
     strip.innerHTML = `${stripDashes(false)}${smiley()}<span>${esc(s.text)}${s.sub ? `<small>${esc(s.sub)}</small>` : ''}</span>${stripDashes(true)}`;
   }
   const count = $app.querySelector('.rl-count');
@@ -603,6 +625,7 @@ function tap(pos) {
   const on = !isMarked(d.me.mask, pos);
   d.me.mask = toggle(d.me.mask, pos, on);
   paintCell(pos, on, true);
+  paintHints();
   buzz(on ? 14 : 6);
   const local = needOf(d.me.mask);
   if (local.need === 0) {
@@ -632,6 +655,7 @@ function tap(pos) {
       }
       d.me.mask = toggle(d.me.mask, pos, !on);
       paintCell(pos, !on, false);
+      paintHints();
       $app.querySelectorAll('.on-line').forEach((c) => c.classList.remove('on-line'));
       toast(messageFor(err));
     });
@@ -658,7 +682,10 @@ function applyState(st) {
   }
   if (st.me.place && !prev.me.place) return celebrate();
   if (S.view === 'card') {
-    if (!S.inflight) paintMask(st.me.mask);
+    if (!S.inflight) {
+      paintMask(st.me.mask);
+      paintHints();
+    }
     if (!S.inflight && needOf(st.me.mask).need > 0) $app.querySelectorAll('.on-line').forEach((c) => c.classList.remove('on-line'));
     updateRoomBits();
   } else if (S.view === 'win') {
@@ -689,16 +716,10 @@ function onSummary(p) {
   d.summary = { n: p.n, count: p.count, winners: p.winners, clock: p.clock, players: p.players };
   paintLive();
   if (p.kind === 'bingo' && p.who && p.who !== myName() && !before.has(p.who)) {
-    const w = p.players.find((x) => x.nick === p.who);
-    const nextPlace = ordinal((p.winners || 1) + 1);
-    banner(
-      `${p.who} got BINGO!`,
-      d.me.place
-        ? `${ordinal(w?.place || p.winners)} place in ${minsShort(w?.secs ?? 0)}`
-        : `${w?.place === 1 ? 'Won' : `${ordinal(w?.place || p.winners)} place`} in ${minsShort(w?.secs ?? 0)}. Keep going for ${nextPlace}!`,
-      () => leaderboardSheet()
-    );
-    buzz(40);
+    // Someone else finished: the strip under your card carries the news.
+    S.news = { who: p.who, until: Date.now() + 9000 };
+    setTimeout(() => S.view === 'card' && updateRoomBits(), 9100);
+    buzz([40, 60, 40]);
   }
   if (S.view === 'card') updateRoomBits();
   else if (S.view === 'win') updateBoard(before);
@@ -740,6 +761,7 @@ function boardHtml(fresh = new Set()) {
 
 function renderWin() {
   S.view = 'win';
+  $banner.classList.remove('show');
   const d = S.data;
   document.title = `BINGO! · ${d.room.code} · Lecture Bingo`;
   const headline = d.me.place === 1 ? 'You won in' : `${ordinal(d.me.place)} place in`;
@@ -754,7 +776,7 @@ function renderWin() {
         ${dash(COLORS.cobalt, 46, 300, 32, 322, 7)}
       </svg>
       ${smiley(COLORS.sun, 'smile')}
-      <p class="bingo-word" aria-hidden="true">BINGO!</p>
+      <p class="bingo-word" aria-hidden="true" data-text="BINGO!">BINGO!</p>
     </div>
     <h1 class="sr-only">BINGO! ${esc(headline)} ${minsLong(d.me.secs ?? 0)}</h1>
     <h2 aria-hidden="true">${esc(headline)}<span>${minsLong(d.me.secs ?? 0)}</span></h2>

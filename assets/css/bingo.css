@@ -53,6 +53,7 @@
 html {
   -webkit-text-size-adjust: 100%;
   background: var(--sun-bg);
+  scrollbar-color: var(--ink) var(--cream);
 }
 
 body {
@@ -237,12 +238,12 @@ button {
   transition: box-shadow 0.15s var(--ease-out);
 }
 .field::placeholder {
-  color: #9b9486;
+  color: #6b6457;
   font-weight: 750;
 }
 .field:focus {
-  outline: none;
-  box-shadow: 0 0 0 4px rgba(79, 154, 251, 0.35);
+  outline: 3px solid var(--cobalt-ink);
+  outline-offset: 3px;
 }
 .field.small {
   height: 54px;
@@ -447,20 +448,24 @@ button {
   align-items: center;
   justify-content: center;
   gap: 0;
-  padding: 3px 2px;
+  padding: 6px 2px;
   border: var(--line) solid var(--ink);
   border-radius: var(--r-cell);
   background: var(--bg);
   color: var(--ink);
   text-align: center;
-  font-weight: 800;
-  font-size: var(--fs, 14px);
-  line-height: 1.12;
-  letter-spacing: -0.015em;
+  font-weight: 720;
+  font-size: var(--fs, 13px);
+  line-height: 1.14;
+  letter-spacing: -0.02em;
   user-select: none;
   -webkit-user-select: none;
   transition: transform 0.18s var(--ease-out);
   overflow: hidden;
+}
+.grid.sized .cell {
+  aspect-ratio: auto;
+  height: var(--cell-h);
 }
 .cell.c-r {
   --bg: var(--tomato);
@@ -488,9 +493,9 @@ button {
 }
 .cell .sticker {
   display: none;
-  width: clamp(22px, 7.4vw, 30px);
+  width: clamp(25px, 8.2vw, 33px);
   flex: none;
-  margin-bottom: 2px;
+  margin: -2px 0 1px;
   filter: drop-shadow(0 1.5px 0 rgba(22, 22, 22, 0.18));
 }
 .cell.hit .sticker {
@@ -591,6 +596,14 @@ button {
     box-shadow: 0 0 0 3px var(--ink);
   }
 }
+.cell.one-away::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 2.5px dashed rgba(22, 22, 22, 0.6);
+  border-radius: 7px;
+  pointer-events: none;
+}
 .cell.won-line {
   box-shadow: 0 0 0 3px var(--ink);
 }
@@ -606,7 +619,7 @@ button {
   gap: 12px;
   width: 100%;
   min-height: 66px;
-  margin: clamp(14px, 3vh, 30px) 0 0;
+  margin: 14px 0 0;
   padding: 8px 18px;
   border: 2.5px solid var(--mint-line);
   border-radius: 999px;
@@ -638,7 +651,24 @@ button {
   border-color: #f2c94c;
 }
 .strip.hot > svg:not(.dz) {
-  animation: wiggle 1.4s ease-in-out infinite;
+  animation: wiggle 1.4s ease-in-out 3;
+}
+.strip.news {
+  background: var(--sun);
+  border-color: var(--ink);
+  border-width: var(--line);
+  animation: news-pop 0.5s var(--ease-spring) both;
+}
+.strip.news > svg:not(.dz) {
+  animation: wiggle 1.2s ease-in-out 3;
+}
+@keyframes news-pop {
+  0% {
+    transform: scale(0.92);
+  }
+  60% {
+    transform: scale(1.04);
+  }
 }
 @keyframes wiggle {
   0%,
@@ -661,8 +691,8 @@ button {
 }
 
 .card-foot {
-  margin-top: auto;
-  padding-top: 14px;
+  margin: 0;
+  padding-top: 12px;
   text-align: center;
   font-size: 13.5px;
   font-weight: 750;
@@ -712,11 +742,22 @@ button {
   line-height: 1;
   letter-spacing: 0.01em;
   color: var(--tomato);
-  -webkit-text-stroke: 7px var(--ink);
+  -webkit-text-stroke: 10px var(--ink);
   paint-order: stroke fill;
-  text-shadow: 0 0 0 var(--ink), 4px 5px 0 rgba(255, 233, 138, 0.9);
+  text-shadow: 1px 1px 0 var(--ink), 2px 2px 0 var(--ink), 3px 3px 0 var(--ink), 4px 4px 0 var(--ink), 5px 5px 0 var(--ink),
+    6px 6px 0 var(--ink);
   transform: translate(-50%, -50%) rotate(-9deg);
   white-space: nowrap;
+}
+.bingo-word::before {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: -1;
+  color: #ffe98a;
+  -webkit-text-stroke: 24px #ffe98a;
+  text-shadow: none;
 }
 .win h2 {
   margin: clamp(4px, 1.5vh, 14px) 0 0;
@@ -942,7 +983,7 @@ button {
   color: var(--tomato-dark);
 }
 .count button {
-  min-height: 40px;
+  min-height: 44px;
   padding: 6px 4px;
   color: var(--cobalt-ink);
   font-weight: 850;
@@ -975,8 +1016,9 @@ button {
 .chip button {
   display: grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
+  width: 44px;
+  height: 44px;
+  margin: -6px -6px -6px -4px;
   flex: none;
   border-radius: 9px;
 }
@@ -1267,5 +1309,8 @@ button {
 @media (max-height: 700px) {
   .books {
     width: min(44%, 160px);
+  }
+  .screen > .deco {
+    display: none;
   }
 }

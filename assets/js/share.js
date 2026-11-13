@@ -143,11 +143,16 @@ export async function drawResult(data) {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.lineJoin = 'round';
-  ctx.lineWidth = 34;
+  ctx.lineWidth = 50;
   ctx.strokeStyle = '#FFE98A';
-  ctx.strokeText('BINGO!', 10, 12);
-  ctx.lineWidth = 20;
+  ctx.strokeText('BINGO!', 6, 6);
+  ctx.lineWidth = 24;
   ctx.strokeStyle = INK;
+  ctx.fillStyle = INK;
+  for (let k = 14; k >= 1; k -= 1) {
+    ctx.strokeText('BINGO!', k, k);
+    ctx.fillText('BINGO!', k, k);
+  }
   ctx.strokeText('BINGO!', 0, 0);
   ctx.fillStyle = COLORS.tomato;
   ctx.fillText('BINGO!', 0, 0);

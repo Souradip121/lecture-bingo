@@ -17,8 +17,15 @@ export const COLORS = {
 export const smiley = (fill = COLORS.sun, cls = '') =>
   `<svg class="${cls}" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21.4" fill="${fill}" stroke="${INK}" stroke-width="3"/><ellipse cx="17.4" cy="19.4" rx="2.6" ry="3.6" fill="${INK}"/><ellipse cx="30.6" cy="19.4" rx="2.6" ry="3.6" fill="${INK}"/><path d="M15 28c2.4 4 5.4 6.1 9 6.1s6.6-2.1 9-6.1" fill="none" stroke="${INK}" stroke-width="3.2" stroke-linecap="round"/></svg>`;
 
+const STAR = 'M24 4.2 29.9 16.6 43.6 18.4 33.6 27.9 36.2 41.5 24 34.9 11.8 41.5 14.4 27.9 4.4 18.4 18.1 16.6Z';
 export const star = (fill = COLORS.sun, cls = '') =>
-  `<svg class="${cls}" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 4.2 29.9 16.6 43.6 18.4 33.6 27.9 36.2 41.5 24 34.9 11.8 41.5 14.4 27.9 4.4 18.4 18.1 16.6Z" fill="${fill}" stroke="${INK}" stroke-width="3.2" stroke-linejoin="round"/></svg>`;
+  `<svg class="${cls}" viewBox="0 0 48 48" aria-hidden="true"><path d="${STAR}" fill="${fill}" stroke="${INK}" stroke-width="3.2" stroke-linejoin="round"/></svg>`;
+
+/** A sticker as it sits on the card: the drawing with its die-cut paper margin. */
+export const sticker = (kind, fill = COLORS.sun) =>
+  kind === 'star'
+    ? `<svg viewBox="-4 -4 56 56" aria-hidden="true"><path d="${STAR}" fill="#FFFBEF" stroke="#FFFBEF" stroke-width="9" stroke-linejoin="round"/><path d="${STAR}" fill="${fill}" stroke="${INK}" stroke-width="3.2" stroke-linejoin="round"/></svg>`
+    : `<svg viewBox="-4 -4 56 56" aria-hidden="true"><circle cx="24" cy="24" r="25.4" fill="#FFFBEF"/><circle cx="24" cy="24" r="21.4" fill="${fill}" stroke="${INK}" stroke-width="3"/><ellipse cx="17.4" cy="19.4" rx="2.6" ry="3.6" fill="${INK}"/><ellipse cx="30.6" cy="19.4" rx="2.6" ry="3.6" fill="${INK}"/><path d="M15 28c2.4 4 5.4 6.1 9 6.1s6.6-2.1 9-6.1" fill="none" stroke="${INK}" stroke-width="3.2" stroke-linecap="round"/></svg>`;
 
 /** The FREE centre: a beaming smiley with little rays. */
 export const beam = () =>
